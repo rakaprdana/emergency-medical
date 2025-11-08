@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="4dp"
+    app:cardCornerRadius="14dp">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tv_hospital_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hospital"
+            android:layout_margin="16dp"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            />
+        <TextView
+            android:id="@+id/tv_hospital_address"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintTop_toBottomOf="@id/tv_hospital_name"
+            app:layout_constraintStart_toStartOf="@id/tv_hospital_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="Jln Mangga harum manis, RT5/RW22, Kec. Mangga, Kel. Buah, Kota Bekasi Timur"
+            />
+        <TextView
+            android:id="@+id/tv_hospital_phone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="12dp"
+            app:layout_constraintTop_toBottomOf="@id/tv_hospital_address"
+            app:layout_constraintStart_toStartOf="@id/tv_hospital_name"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="08123456789"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>
