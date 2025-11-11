@@ -5,8 +5,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.medicalinfo.R
+import com.example.medicalinfo.common.MedicalInfo
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 private const val ARG_PARAM1 = "param1"
@@ -17,6 +21,7 @@ class MainFragment : Fragment() {
     private var param2: String? = null
     private val rvMedicalInfo by lazy { view?.findViewById<RecyclerView>(R.id.rv_medical_info) }
     private val fabAddData by lazy{ view?.findViewById<FloatingActionButton>(R.id.fab_add_data) }
+    private val adapter = MedicalInfoAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +38,27 @@ class MainFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_main, container, false)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initMedicalInfoList()
+        fabAddData?.setOnClickListener {
+            val bundle = bundleOf("medicalInfoData" to adapter.currentList.toTypedArray())
+            findNavController().navigate(R.id.action_mainFragment_to_inputFragment, bundle)
+        }
+    }
+
+    private fun initMedicalInfoList(){
+        rvMedicalInfo?.layoutManager = LinearLayoutManager(context)
+        rvMedicalInfo?.adapter = adapter
+        adapter.setData(generateDummyData())
+    }
+
+    private fun generateDummyData(): List<MedicalInfo>{
+        return listOf(
+            MedicalInfo(),
+            MedicalInfo(hospitalName = "Hospital A", hospitalAddress = "Jln Mangga dua", hospitalPhone = "08124133524524545")
+        )
+    }
     companion object {
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
