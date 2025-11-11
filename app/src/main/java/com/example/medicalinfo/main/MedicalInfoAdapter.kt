@@ -9,17 +9,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.medicalinfo.R
 import com.example.medicalinfo.common.MedicalInfo
 
-class MedicalInfoAdapter :
+class MedicalInfoAdapter(val listener: MedicalInfoListener) :
     ListAdapter<MedicalInfo, MedicalInfoAdapter.MedicalInfoViewHolder>(DiffUtilCalllback()) {
     inner class MedicalInfoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(item: MedicalInfo) {
             val hospitalNameView = itemView.findViewById<TextView>(R.id.tv_hospital_name)
             val hospitalAddressView = itemView.findViewById<TextView>(R.id.tv_hospital_address)
-            val hospitalPhone = itemView.findViewById<TextView>(R.id.tv_hospital_phone)
+            val hospitalPhoneView = itemView.findViewById<TextView>(R.id.tv_hospital_phone)
 
             hospitalNameView.text = item.hospitalName
             hospitalAddressView.text = item.hospitalAddress
-            hospitalPhone.text = item.hospitalPhone
+            hospitalPhoneView.text = item.hospitalPhone
+            hospitalPhoneView.setOnClickListener {
+                listener.onPhoneNumberClickes(hospitalPhoneView?.text.toString())
+            }
         }
     }
 

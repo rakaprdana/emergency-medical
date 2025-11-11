@@ -1,5 +1,7 @@
 package com.example.medicalinfo.main
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -13,22 +15,21 @@ import com.example.medicalinfo.R
 import com.example.medicalinfo.common.MedicalInfo
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-class MainFragment : Fragment() {
-    private var param1: String? = null
-    private var param2: String? = null
-    private val rvMedicalInfo by lazy { view?.findViewById<RecyclerView>(R.id.rv_medical_info) }
-    private val fabAddData by lazy{ view?.findViewById<FloatingActionButton>(R.id.fab_add_data) }
-    private val adapter = MedicalInfoAdapter()
+class MainFragment : Fragment(), MedicalInfoListener {
+
+    //sample untuk test UI
+//    private val rvMedicalInfo by lazy { view?.findViewById<RecyclerView>(R.id.rv_medical_info) }
+//    private val fabAddData by lazy { view?.findViewById<FloatingActionButton>(R.id.fab_add_data) }
+//    private val adapter = MedicalInfoAdapter()
+
+    //definisi variabel ketika terdapat newDataEntry
+    private lateinit var rvMedicalInfo: RecyclerView
+    private lateinit var fabAddData: FloatingActionButton
+    private lateinit var adapter: MedicalInfoAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
     }
 
     override fun onCreateView(
@@ -40,33 +41,50 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initViews()
         initMedicalInfoList()
+        getDataFromInputFragment()
         fabAddData?.setOnClickListener {
             val bundle = bundleOf("medicalInfoData" to adapter.currentList.toTypedArray())
             findNavController().navigate(R.id.action_mainFragment_to_inputFragment, bundle)
         }
     }
 
-    private fun initMedicalInfoList(){
+    private fun initViews() {
+        view?.let {
+            rvMedicalInfo = it.findViewById(R.id.rv_medical_info)
+            fabAddData = it.findViewById(R.id.fab_add_data)
+            adapter = MedicalInfoAdapter(this)
+        }
+    }
+
+    private fun initMedicalInfoList() {
         rvMedicalInfo?.layoutManager = LinearLayoutManager(context)
         rvMedicalInfo?.adapter = adapter
         adapter.setData(generateDummyData())
     }
 
-    private fun generateDummyData(): List<MedicalInfo>{
+    private fun getDataFromInputFragment() {
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<List<MedicalInfo>>(
+            "resultKey"
+        )?.observe(viewLifecycleOwner) { result -> adapter.setData(result) }
+    }
+
+    private fun generateDummyData(): List<MedicalInfo> {
         return listOf(
             MedicalInfo(),
-            MedicalInfo(hospitalName = "Hospital A", hospitalAddress = "Jln Mangga dua", hospitalPhone = "08124133524524545")
+            MedicalInfo(
+                hospitalName = "Hospital A",
+                hospitalAddress = "Jln Mangga dua",
+                hospitalPhone = "08124133524524545"
+            )
         )
     }
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MainFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+
+    override fun onPhoneNumberClickes(phoneNumber: String) {
+        val intent = Intent(Intent.ACTION_DIAL)
+        intent.data = Uri.parse("tel:${phoneNumber}")
+        startActivity(intent)
     }
+
 }
