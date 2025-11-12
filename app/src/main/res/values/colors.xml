@@ -6,4 +6,5 @@
     <color name="main_background">#79C797</color>
     <color name="fab_color">#288F16</color>
     <color name="text_field_bg_color">#F3F4F6</color>
+    <color name="btn_delete">#DC0E0E</color>
 </resources>

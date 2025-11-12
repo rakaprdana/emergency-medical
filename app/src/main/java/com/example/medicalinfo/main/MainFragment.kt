@@ -19,7 +19,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
 
 
-class MainFragment : Fragment(), MedicalInfoListener {
+class MainFragment: Fragment(), MedicalInfoListener {
 
     //sample untuk test UI
 //    private val rvMedicalInfo by lazy { view?.findViewById<RecyclerView>(R.id.rv_medical_info) }
@@ -79,7 +79,7 @@ class MainFragment : Fragment(), MedicalInfoListener {
     private fun initMedicalInfoList() {
         rvMedicalInfo?.layoutManager = LinearLayoutManager(context)
         rvMedicalInfo?.adapter = adapter
-        adapter.setData(generateDummyData())
+//        adapter.setData(generateDummyData())
     }
 
     private fun getDataFromInputFragment() {
@@ -87,17 +87,25 @@ class MainFragment : Fragment(), MedicalInfoListener {
             "resultKey"
         )?.observe(viewLifecycleOwner) { result -> adapter.setData(result) }
     }
-
-    private fun generateDummyData(): List<MedicalInfo> {
-        return listOf(
-            MedicalInfo(),
-            MedicalInfo(
-                hospitalName = "Hospital A",
-                hospitalAddress = "Jln Mangga dua",
-                hospitalPhone = "08124133524524545"
-            )
-        )
+   override fun onDeleteClick(position: Int){
+        lifecycleScope.launch {
+            val updatedList = adapter.currentList.toMutableList().apply {
+                removeAt(position)
+            }
+            dataStoreManager.saveHospitalData(updatedList)
+            adapter.setData(updatedList)
+        }
     }
+//    private fun generateDummyData(): List<MedicalInfo> {
+//        return listOf(
+//            MedicalInfo(),
+//            MedicalInfo(
+//                hospitalName = "Hospital A",
+//                hospitalAddress = "Jln Mangga dua",
+//                hospitalPhone = "08124133524524545"
+//            )
+//        )
+//    }
 
     override fun onPhoneNumberClickes(phoneNumber: String) {
         val intent = Intent(Intent.ACTION_DIAL)

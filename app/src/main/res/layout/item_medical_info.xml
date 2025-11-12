@@ -41,6 +41,24 @@
             app:layout_constraintStart_toStartOf="@id/tv_hospital_name"
             app:layout_constraintBottom_toBottomOf="parent"
             android:text="08123456789"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:backgroundTint="@color/white"
+            android:textColor="@color/main_background"
+            app:strokeColor="@color/main_background"
+            app:strokeWidth="1dp"
+            android:text="Delete"
+            android:textStyle="bold"
+            app:cornerRadius="8dp"
+            app:layout_constraintBottom_toBottomOf="@id/tv_hospital_phone"
+            app:layout_constraintEnd_toEndOf="@id/cl_parent"
+            app:layout_constraintHorizontal_bias="0.913"
+            app:layout_constraintStart_toEndOf="@id/tv_hospital_phone"
+            app:layout_constraintTop_toTopOf="@id/tv_hospital_phone"
+            app:layout_constraintVertical_bias="0.571" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>
