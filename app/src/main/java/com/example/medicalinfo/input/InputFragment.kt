@@ -1,5 +1,6 @@
 package com.example.medicalinfo.input
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -9,11 +10,15 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.medicalinfo.R
+import com.example.medicalinfo.common.DataStoreManager
 import com.example.medicalinfo.common.MedicalInfo
+import com.example.medicalinfo.main.MedicalInfoAdapter
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import kotlinx.coroutines.launch
 
 class InputFragment : Fragment() {
     private val btnBack by lazy { view?.findViewById<ImageView>(R.id.iv_back_arrow) }
@@ -24,6 +29,7 @@ class InputFragment : Fragment() {
     private val btnSave by lazy { view?.findViewById<MaterialButton>(R.id.btn_save) }
     private val medicalInfoData =
         mutableListOf<MedicalInfo>() //menampung data yang terkirim dari fragment sebelumnya
+    private lateinit var dataStoreManager: DataStoreManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +49,7 @@ class InputFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        dataStoreManager = DataStoreManager(requireContext())
         btnDiscard?.setOnClickListener {
             discardData()
         }
@@ -53,6 +60,13 @@ class InputFragment : Fragment() {
                 showToast("Mohon lengkapi data terlebih dahulu")
             }
         }
+        lifecycleScope.launch {
+            dataStoreManager.getHospitalData().collect { list ->
+                medicalInfoData.clear()
+                medicalInfoData.addAll(list)
+            }
+        }
+
         handleOnBackPressed()
         btnBack?.setOnClickListener {
             backToMainFragment()
@@ -71,12 +85,15 @@ class InputFragment : Fragment() {
             hospitalAddress = inputAddressField?.text.toString(),
             hospitalPhone = inputPhoneField?.text.toString()
         )
-        try {
-            medicalInfoData.add(newDataEntry)
-            discardData()
-            showToast("Data berhasil tersimpan")
-        } catch (e: Exception) {
-            showToast("Data gagal tersimpan!")
+        lifecycleScope.launch {
+            try {
+                medicalInfoData.add(newDataEntry)
+                dataStoreManager.saveHospitalData(medicalInfoData)
+                discardData()
+                showToast("Data berhasil tersimpan")
+            } catch (e: Exception) {
+                showToast("Data gagal tersimpan!")
+            }
         }
     }
 

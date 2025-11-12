@@ -8,12 +8,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.medicalinfo.R
+import com.example.medicalinfo.common.DataStoreManager
 import com.example.medicalinfo.common.MedicalInfo
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.launch
 
 
 class MainFragment : Fragment(), MedicalInfoListener {
@@ -27,6 +30,8 @@ class MainFragment : Fragment(), MedicalInfoListener {
     private lateinit var rvMedicalInfo: RecyclerView
     private lateinit var fabAddData: FloatingActionButton
     private lateinit var adapter: MedicalInfoAdapter
+    private lateinit var dataStoreManager: DataStoreManager
+    private val medicalInfoData = mutableListOf<MedicalInfo>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,10 +49,12 @@ class MainFragment : Fragment(), MedicalInfoListener {
         initViews()
         initMedicalInfoList()
         getDataFromInputFragment()
+        dataStoreManager= DataStoreManager(requireContext())
         fabAddData?.setOnClickListener {
             val bundle = bundleOf("medicalInfoData" to adapter.currentList.toTypedArray())
             findNavController().navigate(R.id.action_mainFragment_to_inputFragment, bundle)
         }
+        observeData()
     }
 
     private fun initViews() {
@@ -57,7 +64,18 @@ class MainFragment : Fragment(), MedicalInfoListener {
             adapter = MedicalInfoAdapter(this)
         }
     }
-
+    private fun observeData(){
+        lifecycleScope.launch {
+            dataStoreManager.getHospitalData().collect { list ->
+                if (list.isNotEmpty()){
+                    medicalInfoData.addAll(list)
+                    adapter.setData(list.toList())
+                } else{
+                    adapter.setData(emptyList())
+                }
+            }
+        }
+    }
     private fun initMedicalInfoList() {
         rvMedicalInfo?.layoutManager = LinearLayoutManager(context)
         rvMedicalInfo?.adapter = adapter
